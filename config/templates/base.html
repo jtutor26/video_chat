@@ -4,7 +4,7 @@
 </head>
 <body>
     <nav>
-        <a href="{%url 'dashboard'%}">Dashboard</a> <!--NEED TO CREATE DASHBOARD-->
+        
         {% if user.is_authenticated %}
             <span>Hello, <a href="{% url 'profile' %}">{{ user.first_name }}</a></span> <!--NEED TO CHANGE THIS TO A 'Edit Account' BUTTON-->
             <a href="{% url 'logout' %}">Logout</a>
