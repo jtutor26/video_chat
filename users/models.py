@@ -23,6 +23,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     
     # more admin-related fields
     is_active = models.BooleanField(default=True)

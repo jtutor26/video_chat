@@ -4,6 +4,14 @@
 {% block content %}
     <h2>My Profile</h2>
 
+    {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+    {% else %}
+        <div style="width: 150px; height: 150px; background-color: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            No Image
+        </div>
+    {% endif %}
+
     {% if messages %}
         {% for message in messages %}
             <div>
@@ -13,7 +21,7 @@
     {% endif %}
 
     <div>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
             {% for field in form %}

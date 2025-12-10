@@ -119,7 +119,15 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+
+
 # Using our custom user model instead of the normal one
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+
+# Path where media is stored
+MEDIA_ROOT = BASE_DIR / 'media'
