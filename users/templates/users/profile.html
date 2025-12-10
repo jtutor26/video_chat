@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>My Profile</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div>
+                    <label><strong>{{ field.label }}</strong></label>
+                    <br>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div>
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit">Update Profile</button>
+        </form>
+    </div>
+{% endblock %}

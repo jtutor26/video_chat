@@ -120,5 +120,6 @@ STATIC_URL = 'static/'
 
 
 # Using our custom user model instead of the normal one
-
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
