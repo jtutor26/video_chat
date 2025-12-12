@@ -1,19 +1,66 @@
 {% extends 'base.html' %}
-{% block title %}{{ room.name }}{% endblock title %}
+{% load static %} {% block title %}{{ room.name }}{% endblock title %}
 
 {% block content %}
-    <h2>Room: {{ room.name }}</h2>
-    <p>Room ID: {{ room.room_id }}</p>
-    <p>Host: {{ room.host.first_name }}</p>
-    
-    <hr>
-    
-    <div id="video-container" style="display:flex; gap:10px;">
-        <div style="width:400px; height:300px; background-color:black; color:white; display:flex; align-items:center; justify-content:center;">
-            Placeholder
-        </div>
-    </div>
 
-    <br>
-    <a href="{% url 'lobby' %}">Leave Room</a>
+<style>
+    /* Simple styling for the video grid */
+    #video-streams {
+        display: flex;
+        flex-wrap: wrap;
+        height: 100vh;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .video-container {
+        flex-basis: 500px;
+        max-width: 500px;
+        min-height: 300px;
+        max-height: 300px;
+        border: 2px solid #000;
+        background-color: #203A49;
+        position: relative;
+    }
+
+    .video-player {
+        height: 100%;
+        width: 100%;
+    }
+
+    .username-wrapper {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+        background-color: rgba(0,0,0,0.5);
+        padding: 5px;
+        color: #fff;
+        border-radius: 5px;
+    }
+</style>
+
+<main>
+    <h2>Room: {{ room.name }}</h2>
+    
+    <div id="video-streams"></div>
+
+    <div id="controls-wrapper">
+        <button id="mic-btn">Mic On</button>
+        <button id="camera-btn">Camera On</button>
+        <button id="leave-btn" style="background-color: #ff5555; color: white;">Leave Room</button>
+    </div>
+</main>
+
+<script>
+    sessionStorage.setItem('UID', '{{ user.id }}')
+    sessionStorage.setItem('room_name', '{{ room.name }}')
+    // handle tokens later
+    sessionStorage.setItem('token', '') 
+</script>
+
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>
+
+<script src="{% static 'js/streams.js' %}"></script>
+
 {% endblock content %}
