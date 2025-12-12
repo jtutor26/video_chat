@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Create Room{% endblock title %}
+
+{% block content %}
+    <h2>Create a New Room</h2>
+    
+    <div style="margin-bottom: 20px;">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Create Room</button>
+        </form>
+    </div>
+
+    <a href="{% url 'lobby' %}">Back to Lobby</a>
+{% endblock content %}
