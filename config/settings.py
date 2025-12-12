@@ -131,3 +131,7 @@ MEDIA_URL = '/media/'
 
 # Path where media is stored
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# used to redirect users to the login page if they try accessing a page requireing auth
+LOGIN_URL = '/login/'
