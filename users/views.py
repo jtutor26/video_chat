@@ -13,7 +13,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user) #auto login after registration
-            return redirect('profile') # CHANGE TO REDIRECT TO A HOMEPAGE
+            return redirect('lobby') # CHANGE TO REDIRECT TO A HOMEPAGE
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
@@ -27,7 +27,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('profile') # CHANGE TO REDIRECT TO A HOMEPAGE
+            return redirect('lobby') # CHANGE TO REDIRECT TO A HOMEPAGE
     else:
         form = CustomAuthenticationForm()
     return render(request, 'users/login.html', {'form': form})

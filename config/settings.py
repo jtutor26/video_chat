@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-%h$c(xtv+pr93w+sb-b360faum8qa&n7zbc_p#_86^&e1c!9&y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.dev']
 
 # Application definition
 
@@ -118,7 +119,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
 
 # Using our custom user model instead of the normal one
@@ -131,3 +134,7 @@ MEDIA_URL = '/media/'
 
 # Path where media is stored
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# used to redirect users to the login page if they try accessing a page requireing auth
+LOGIN_URL = '/login/'

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Lobby{% endblock title %}
+
+{% block content %}
+    <h2>Video Chat Lobby</h2>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: red;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <a href="{% url 'create_room' %}" style="display: block; margin-bottom: 20px;">
+        <button>Create New Room</button>
+    </a>
+    
+    <h3>Active Rooms</h3>
+    
+    {% if rooms %}
+        <ul>
+        {% for room in rooms %}
+            <li>
+                <a href="{% url 'room' room.room_id %}" 
+                   class="room-link"
+                   data-has-passcode="{% if room.passcode != None %}true{% else %}false{% endif %}">
+                    Room: <strong>{{ room.name }}</strong> 
+                </a>
+                (Host: {{ room.host.first_name|default:room.host.email }})
+                {% if room.passcode != None %}🔒{% endif %}
+            </li>
+        {% empty %}
+            <li>No active rooms found.</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <script>
+        // Get all room links
+        const roomLinks = document.querySelectorAll('.room-link');
+
+        roomLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Check if the room has a passcode based on the data attribute
+                const hasPasscode = link.getAttribute('data-has-passcode') === 'true';
+                
+                if (hasPasscode) {
+                    e.preventDefault(); // Stop the link from going to the room immediately
+                    
+                    const code = prompt("This room is locked. Please enter the passcode:");
+                    
+                    // If the user entered something (didn't hit cancel)
+                    if (code !== null) {
+                        // Redirect to the room URL with the passcode as a query parameter
+                        window.location.href = link.href + "?passcode=" + code;
+                    }
+                }
+                // If no passcode is needed, the link works as normal
+            });
+        });
+    </script>
+
+{% endblock content %}
