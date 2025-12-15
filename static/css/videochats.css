@@ -1,0 +1,229 @@
+/* --- Lobby Styles --- */
+
+/* Center the main headings */
+h2, h3 {
+    text-align: center;
+    color: #203A49; /* Matching primary color */
+    margin-top: 20px;
+}
+
+/* --- Create Room Button Centering --- */
+/* Target the link wrapping the button to center it */
+a[href*="create"] {
+    display: flex !important; /* Force flex to easily center content */
+    justify-content: center;
+    text-decoration: none;
+    margin: 30px 0; /* Add spacing above and below */
+}
+
+/* Style the button itself */
+button {
+    background-color: #3e8e41;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+button:hover {
+    background-color: #367c39;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* --- Room List "Card" Box --- */
+/* This creates the centered box effect for the list */
+ul {
+    max-width: 700px; /* Restricts width so it's not full screen */
+    margin: 0 auto;   /* Centers the box horizontally */
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08); /* Soft shadow for "lifted" look */
+    list-style: none; /* Removes bullet points */
+    padding: 0;
+    overflow: hidden; /* Keeps child elements inside rounded corners */
+}
+
+li {
+    padding: 20px 30px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between; /* Pushes Name to left, Host to right */
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+li:hover {
+    background-color: #f9fbfd; /* Slight highlight on hover */
+}
+
+.room-link {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #203A49;
+    text-decoration: none;
+}
+
+.room-link:hover {
+    text-decoration: underline;
+}
+
+/* Empty state message */
+li:only-child {
+    justify-content: center;
+    color: #888;
+    font-style: italic;
+}
+
+
+/* --- Active Room (Video Grid) Styles --- */
+/* (Keep these for the actual video room page) */
+
+#video-streams {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    height: 80vh;
+    overflow-y: auto;
+}
+
+.video-container {
+    flex-basis: 500px;
+    max-width: 500px;
+    min-height: 300px;
+    max-height: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #203A49;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.video-player {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.username-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+/* Controls Bar */
+#controls-wrapper {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 15px 25px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+#controls-wrapper button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1rem;
+    margin: 0; /* Reset margin from the general button style above */
+    box-shadow: none;
+}
+
+#mic-btn, #camera-btn {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+#leave-btn {
+    background-color: #ff5555;
+    color: white;
+}
+
+/* --- Center the "Back to Lobby" Link --- */
+/* This selects the lobby link but excludes the one inside the navigation bar */
+a[href*="lobby"]:not(nav a) {
+    display: block;          /* Allows it to take up full width to be centered */
+    text-align: center;      /* Centers the text */
+    margin: 20px auto;       /* Adds spacing above and below */
+    width: fit-content;      /* Ensures the hover effect only highlights the text area */
+    font-weight: 600;
+}
+
+/* --- Mobile Responsive Styles (Add to bottom of videochats.css) --- */
+@media screen and (max-width: 768px) {
+    /* --- Lobby Mobile --- */
+    ul {
+        width: 95%;
+    }
+
+    li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 25px; /* More padding for each room card */
+    }
+
+    .room-link {
+        font-size: 1.4rem; /* Much larger room names */
+    }
+
+    /* Big, easy-to-tap Create Button */
+    .btn-create {
+        width: 95%;
+        display: block;
+        margin: 20px auto;
+        padding: 15px;
+        font-size: 1.2rem;
+    }
+
+    /* --- Video Room Mobile --- */
+    #video-streams {
+        padding: 10px;
+        height: auto;
+        margin-bottom: 100px; /* More space for the bigger controls */
+    }
+
+    .video-container {
+        flex-basis: 100%;
+        max-width: 100%;
+        min-height: 280px; 
+    }
+
+    /* Bigger Control Bar */
+    #controls-wrapper {
+        width: 95%;
+        padding: 15px;
+        gap: 12px;
+    }
+
+    #controls-wrapper button {
+        padding: 12px;       /* Larger touch area */
+        font-size: 1rem;
+        height: 50px;        /* Fixed height for consistency */
+    }
+}

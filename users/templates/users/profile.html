@@ -1,23 +1,25 @@
 {% extends 'base.html' %}
-{%block title%}Profile{%endblock title%}
+{% load static %} {% block title %}Profile{% endblock title %}
 
 {% block content %}
     <h2>My Profile</h2>
 
-    {% if user.profile_image %}
-        <img src="{{ user.profile_image.url }}" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
-    {% else %}
-        <div style="width: 150px; height: 150px; background-color: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            No Image
-        </div>
-    {% endif %}
+    <div class="profile-image-wrapper">
+        {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="profile-img">
+        {% else %}
+            <div class="no-image-placeholder">
+                No Image
+            </div>
+        {% endif %}
+    </div>
 
     {% if messages %}
-        {% for message in messages %}
-            <div>
-                {{ message }}
-            </div>
-        {% endfor %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
     <div>
@@ -30,7 +32,7 @@
                     <br>
                     {{ field }}
                     {% if field.errors %}
-                        <div>
+                        <div style="color: red; font-size: 0.9em;">
                             {{ field.errors }}
                         </div>
                     {% endif %}
