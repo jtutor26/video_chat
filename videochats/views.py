@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Room
 from .forms import RoomForm
+from django.contrib import messages
 
 # Create your views here.
 @login_required
@@ -29,4 +30,15 @@ def room_view(request, room_id):
         room = Room.objects.get(room_id=room_id)
     except Room.DoesNotExist:
         return redirect('lobby')
+    
+    # Check if the room has a passcode
+    # We skip this check if the current user is the host of the room
+    if room.passcode is not None and request.user != room.host:
+        entered_passcode = request.GET.get('passcode')
+        
+        # Verify the passcode (convert room.passcode to string for comparison)
+        if entered_passcode != str(room.passcode):
+            messages.error(request, 'Invalid passcode provided for this room.')
+            return redirect('lobby')
+
     return render(request, 'videochats/room.html', {'room': room,})

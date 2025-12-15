@@ -14,6 +14,7 @@ class Room(models.Model):
     # can just guess a URL and get into a room
     room_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
 
+    passcode = models.PositiveIntegerField(default=None, null=True)
     max_members = models.IntegerField(default=10)
 
     def __str__(self):

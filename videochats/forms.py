@@ -4,7 +4,7 @@ from .models import Room
 class RoomForm(forms.ModelForm):
     class Meta:
         model = Room
-        fields = ['name', 'max_members']
+        fields = ['name', 'passcode', 'max_members']
         
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Enter room name'}),
