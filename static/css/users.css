@@ -122,3 +122,39 @@ form + p a {
     font-weight: 600;
     color: #203A49;
 }
+
+/* --- Mobile Responsive Styles (Add to bottom of users.css) --- */
+@media screen and (max-width: 768px) {
+    /* Make forms take up most of the screen width */
+    form {
+        max-width: 100%;
+        width: 95%;       /* Almost full width */
+        padding: 2rem;    /* Generous padding */
+        margin-top: 20px;
+    }
+    
+    /* Make input fields taller and text larger */
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"],
+    form input[type="file"] {
+        padding: 15px;        /* Taller inputs for easier tapping */
+        font-size: 1.1rem;    /* Larger text inside inputs */
+        margin-bottom: 10px;
+    }
+    
+    /* Make the submit button big and bold */
+    button[type="submit"] {
+        padding: 15px;
+        font-size: 1.2rem;
+    }
+
+    form label {
+        font-size: 1.1rem;
+    }
+
+    .profile-img, .no-image-placeholder {
+        width: 140px;     /* Kept reasonably large */
+        height: 140px;
+    }
+}

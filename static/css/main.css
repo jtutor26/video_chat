@@ -86,3 +86,36 @@ body > h2, body > main, body > div, .content-wrapper {
     padding-bottom: 5px;
     color: var(--primary-color);
 }
+
+/* --- Mobile Responsive Styles (Add to bottom of main.css) --- */
+@media screen and (max-width: 768px) {
+    /* Stack navigation items or wrap them nicely */
+    nav {
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 1.5rem 1rem; /* More vertical padding */
+        gap: 15px;            /* More space between links */
+    }
+
+    nav a {
+        font-size: 1.1rem;    /* Bigger text */
+        padding: 10px 15px;   /* Larger touch target */
+        background-color: #f8f9fa; /* Slight background to make them look like buttons */
+        border-radius: 6px;
+    }
+
+    /* Shrink the big homepage title slightly less than before */
+    .title {
+        font-size: 2.5rem;
+        margin-top: 2rem;
+    }
+
+    /* Adjust content padding */
+    body > h2, body > main, body > div, .content-wrapper {
+        padding: 0 20px;
+    }
+    
+    p {
+        font-size: 1.1rem; /* Make general text easier to read */
+    }
+}
