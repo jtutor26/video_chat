@@ -101,7 +101,8 @@ def get_game_state(request, room_id):
         'actor_name': room.current_actor.first_name if room.current_actor else "None",
         'actor_id': room.current_actor.id if room.current_actor else None,
         'word': word_to_show,
-        'current_user_id': request.user.id
+        'current_user_id': request.user.id,
+        'game_mode': room.game_mode,
     })
 
 @login_required

@@ -125,11 +125,16 @@
             const wordDisplay = document.getElementById('secret-word');
             const guessBox = document.getElementById('guess-container');
             const startBtn = document.getElementById('start-btn');
-
             if (data.is_active) {
                 if (startBtn) startBtn.style.display = 'none'; // Hide start button if game running
                 
-                if (data.current_user_id === data.actor_id) {
+                if (data.game_mode === 'host_only' && myId === {{ room.host.id }}) {
+                    statusText.innerText = "You are the host!";
+                    document.getElementById('word-text').innerText = data.word;
+                    wordDisplay.style.display = 'block';
+                    guessBox.style.display = 'none';
+                }
+                else if (data.current_user_id === data.actor_id) {
                     // I AM THE ACTOR
                     // show the word and hide the guess box
                     statusText.innerText = "You are acting!";
