@@ -25,7 +25,7 @@ a {
 
 /* --- Navigation --- */
 nav {
-    background-color: var(--nav-bg);
+    background-image: var(--nav-bg);
     padding: 1rem 2rem;
     box-shadow: var(--shadow);
     display: flex;

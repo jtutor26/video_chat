@@ -18,7 +18,7 @@ a[href*="create"] {
 
 /* Style the button itself */
 button {
-    background-color: #3e8e41;
+    background-color: green;
     color: white;
     padding: 12px 30px;
     border: none;
@@ -264,3 +264,5 @@ a[href*="lobby"]:not(nav a) {
         height: 50px;        /* Fixed height for consistency */
     }
 }
+
+
