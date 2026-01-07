@@ -114,31 +114,15 @@ def delete_room(request, room_id):
             return JsonResponse({'status': 'deleted'})
     except Room.DoesNotExist:
         pass # Room might already be gone, which is fine
-        
-            
-        
-        return JsonResponse({'status': 'ok'})
-        
-    
-        
-    @login_required
-        
-    def change_game_mode(request, room_id):
-        
-        room = Room.objects.get(room_id=room_id)
-        
-        if request.user == room.host:
-        
-            if room.game_mode == 'normal':
-        
-                room.game_mode = 'host_only'
-        
-            else:
-        
-                room.game_mode = 'normal'
-        
-            room.save()
-        
-        return JsonResponse({'status': 'ok', 'game_mode': room.get_game_mode_display()})
-        
-    
+    return JsonResponse({'status': 'ok'})
+
+@login_required
+def change_game_mode(request, room_id):
+    room = Room.objects.get(room_id=room_id)
+    if request.user == room.host:
+        if room.game_mode == 'normal':
+            room.game_mode = 'host_only'
+        else:
+            room.game_mode = 'normal'
+        room.save()
+    return JsonResponse({'status': 'ok', 'game_mode': room.get_game_mode_display()})
