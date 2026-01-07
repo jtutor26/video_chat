@@ -4,175 +4,46 @@
 {% block content %}
 
 <style>
-    body {
-        background-color: #f0f2f5;
-        font-family: Arial, sans-serif;
-    }
-
-    #game-container {
-        display: flex;
-        justify-content: space-between;
-        padding: 20px;
-        gap: 20px;
-    }
-
+    /* Simple styling for the video grid */
     #video-streams {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-        width: 75%;
+        display: flex;
+        flex-wrap: wrap;
+        height: 100vh;
+        width: 100%;
+        gap: 10px;
     }
 
     .video-container {
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex-basis: 500px;
+        max-width: 500px;
+        min-height: 300px;
+        max-height: 300px;
+        border: 2px solid #000;
+        background-color: #203A49;
         position: relative;
-        background-color: #000;
     }
 
     .video-player {
-        width: 100%;
         height: 100%;
-        object-fit: cover;
+        width: 100%;
     }
 
     .username-wrapper {
         position: absolute;
         top: 10px;
         left: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        background-color: rgba(0,0,0,0.5);
+        padding: 5px;
         color: #fff;
-        padding: 5px 10px;
         border-radius: 5px;
-        font-size: 14px;
-    }
-
-    #chat-container {
-        width: 25%;
-        display: flex;
-        flex-direction: column;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-    }
-
-    #game-info {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    #word-display {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    #timer {
-        font-size: 20px;
-        color: #ff4d4d;
-        margin-bottom: 10px;
-    }
-
-    #score {
-        font-size: 20px;
-        color: #4CAF50;
-    }
-
-    #messages {
-        flex-grow: 1;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 10px;
-        background-color: #f9f9f9;
-    }
-
-    #guess-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-
-    #difficulty-selection button,
-    #new-game-mode-btn {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        margin-bottom: 10px;
-        transition: background-color 0.3s;
-    }
-
-    #difficulty-selection button:hover,
-    #new-game-mode-btn:hover {
-        background-color: #0056b3;
-    }
-
-    #controls-wrapper {
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    #controls-wrapper button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        margin: 0 10px;
-        transition: background-color 0.3s;
-    }
-
-    #controls-wrapper button:hover {
-        background-color: #0056b3;
-    }
-
-    #leave-btn {
-        background-color: #ff4d4d !important;
-    }
-
-    #leave-btn:hover {
-        background-color: #cc0000 !important;
-    }
-
-    @keyframes blink {
-        50% {
-            opacity: 0;
-        }
     }
 </style>
 
 <main>
     <h2>Room: {{ room.name }}</h2>
     
-    <div id="game-container">
-        <div id="video-streams"></div>
-        <div id="chat-container">
-            <div id="game-info">
-                <div id="word-display"></div>
-                <div id="timer"></div>
-                <div id="score">0</div>
-            </div>
-            <div id="messages"></div>
-            <input type="text" id="guess-input" placeholder="Enter your guess...">
-            <div id="difficulty-selection">
-                <button id="easy-btn">Easy</button>
-                <button id="medium-btn">Medium</button>
-                <button id="hard-btn">Hard</button>
-                <button id="new-game-mode-btn">New Game Mode</button>
-            </div>
-        </div>
-    </div>
+    <div id="video-streams"></div>
 
     <div id="controls-wrapper">
         <button id="mic-btn">Mic On</button>
@@ -181,20 +52,15 @@
     </div>
 </main>
 
-
 <script>
     sessionStorage.setItem('UID', '{{ user.id }}')
     sessionStorage.setItem('room_name', '{{ room.name }}')
     // handle tokens later
     sessionStorage.setItem('token', '') 
-    const charadesJsonUrl = "{% static 'js/charades.json' %}";
 </script>
 
 <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>
-<script src="https://download.agora.io/sdk/release/AgoraRTM_N-1.4.4.js"></script>
 
 <script src="{% static 'js/streams.js' %}"></script>
-<script src="{% static 'js/gamerules.js' %}"></script>
-<script src="{% static 'js/chat.js' %}"></script>
 
 {% endblock content %}
