@@ -5,8 +5,8 @@ from .forms import RoomForm
 from django.contrib import messages
 from django.http import JsonResponse
 import json
+from users.models import CustomUser
 
-# Create your views here.
 @login_required
 def lobby_view(request):
     return render(request, 'videochats/lobby.html', {'rooms':Room.objects.all()})
@@ -45,6 +45,19 @@ def room_view(request, room_id):
 
     return render(request, 'videochats/room.html', {'room': room,})
 
+# Used to get the name for the video boxes in the rooms
+@login_required
+def get_first_name(request):
+    uid = request.GET.get('uid')
+    try:
+        user = CustomUser.objects.get(id=uid)
+        # Explicitly return the first_name
+        return JsonResponse({'name': user.first_name})
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'name': "Unknown"})
+
+
+# CHARADES RELATED FUNCTIONS
 @login_required
 def start_game(request, room_id):
     room = Room.objects.get(room_id=room_id)
@@ -76,7 +89,7 @@ def make_guess(request, room_id):
 def get_game_state(request, room_id):
     room = Room.objects.get(room_id=room_id)
     
-    # Only show the word if the requester IS the actor
+    # Only show the word if the requester is the actor
     word_to_show = room.current_word if request.user == room.current_actor else "???"
     
     return JsonResponse({
@@ -86,3 +99,16 @@ def get_game_state(request, room_id):
         'word': word_to_show,
         'current_user_id': request.user.id
     })
+
+@login_required
+def delete_room(request, room_id):
+    try:
+        room = Room.objects.get(room_id=room_id)
+        # Only delete if the user is the host
+        if request.user == room.host:
+            room.delete()
+            return JsonResponse({'status': 'deleted'})
+    except Room.DoesNotExist:
+        pass # Room might already be gone, which is fine
+        
+    return JsonResponse({'status': 'ok'})
