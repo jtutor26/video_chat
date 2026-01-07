@@ -153,7 +153,7 @@
         .then(res => res.json())
         .then(data => {
             alert(`Game mode changed to ${data.game_mode}`);
-            location.reload();
+            document.querySelector('h2').innerText = `Room: {{ room.name }} (${data.game_mode})`;
         });
     });
 
