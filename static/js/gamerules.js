@@ -90,15 +90,6 @@ function chooseGameMode() {
     const gameModesArray = Array.from(gameModes);
     const randomIndex = Math.floor(Math.random() * gameModesArray.length);
     activeGameMode = gameModesArray[randomIndex];
-    
-    // Send RTM message to synchronize game mode
-    channel.sendMessage({ 
-        text: JSON.stringify({
-            type: 'gameModeChange',
-            gameMode: activeGameMode
-        })
-    });
-
     sendSystemMessage(`New game mode: ${activeGameMode}`);
     applyGameModeEffects();
 }
