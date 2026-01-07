@@ -134,3 +134,26 @@ joinAndDisplayLocalStream()
 document.getElementById('leave-btn').addEventListener('click', leaveAndRemoveLocalStream)
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
+
+const gameModes = new Set(["blinking-screen", "black-and-white", "short-time", "on-and-off-cam", "reverse"]);
+
+const activateGameMode = () => {
+    const videoContainers = document.querySelectorAll('.video-container');
+    const modes = Array.from(gameModes);
+    
+    // 50% chance for normal mode
+    const randomMode = Math.random() < 0.5 ? 'normal' : modes[Math.floor(Math.random() * modes.length)];
+
+    videoContainers.forEach(container => {
+        // Remove all previous game mode classes
+        modes.forEach(mode => container.classList.remove(mode));
+        container.classList.remove('normal');
+
+        // Add the new game mode class
+        if (randomMode !== 'normal') {
+            container.classList.add(randomMode);
+        }
+    });
+};
+
+document.getElementById('game-mode-btn').addEventListener('click', activateGameMode);
