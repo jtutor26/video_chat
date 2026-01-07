@@ -43,7 +43,7 @@
 </style>
 
 <main>
-    <h2>Room: {{ room.name }}</h2>
+    <h2>Room: {{ room.name }} ({{ room.get_game_mode_display }})</h2>
     
     <!--VIDEO GRID-->
     <div id="video-streams"></div>
@@ -68,7 +68,6 @@
     <div id="controls-wrapper">
         <button id="mic-btn">Mic On</button>
         <button id="camera-btn">Camera On</button>
-        <button id="game-mode-btn">Game Mode</button>
         <button id="leave-btn" style="background-color: #ff5555; color: white;">Leave Room</button>
     </div>
 </main>

@@ -77,8 +77,9 @@ def make_guess(request, room_id):
         room = Room.objects.get(room_id=room_id)
         # Check if guess is correct
         if guess == room.current_word.lower(): # type: ignore
-            # Winner becomes the new actor
-            room.current_actor = request.user 
+            if room.game_mode == 'normal':
+                # Winner becomes the new actor
+                room.current_actor = request.user 
             room.pick_new_word()
             room.save()
             return JsonResponse({'correct': True, 'winner': request.user.first_name})
@@ -89,8 +90,11 @@ def make_guess(request, room_id):
 def get_game_state(request, room_id):
     room = Room.objects.get(room_id=room_id)
     
-    # Only show the word if the requester is the actor
-    word_to_show = room.current_word if request.user == room.current_actor else "???"
+    word_to_show = "???"
+    if room.game_mode == 'host_only' and request.user == room.host:
+        word_to_show = room.current_word
+    elif request.user == room.current_actor:
+        word_to_show = room.current_word
     
     return JsonResponse({
         'is_active': room.is_game_active,
