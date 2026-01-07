@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Room
 from .forms import RoomForm
 from django.contrib import messages
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 @login_required
@@ -42,3 +44,45 @@ def room_view(request, room_id):
             return redirect('lobby')
 
     return render(request, 'videochats/room.html', {'room': room,})
+
+@login_required
+def start_game(request, room_id):
+    room = Room.objects.get(room_id=room_id)
+    # This is where we check if the current user is the host
+    if request.user == room.host:
+        room.is_game_active = True
+        room.current_actor = request.user # Host starts as actor
+        room.pick_new_word()
+        room.save()
+    return JsonResponse({'status': 'started'})
+
+@login_required
+def make_guess(request, room_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        guess = data.get('guess', '').strip().lower()
+        room = Room.objects.get(room_id=room_id)
+        # Check if guess is correct
+        if guess == room.current_word.lower(): # type: ignore
+            # Winner becomes the new actor
+            room.current_actor = request.user 
+            room.pick_new_word()
+            room.save()
+            return JsonResponse({'correct': True, 'winner': request.user.first_name})
+            
+    return JsonResponse({'correct': False})
+
+@login_required
+def get_game_state(request, room_id):
+    room = Room.objects.get(room_id=room_id)
+    
+    # Only show the word if the requester IS the actor
+    word_to_show = room.current_word if request.user == room.current_actor else "???"
+    
+    return JsonResponse({
+        'is_active': room.is_game_active,
+        'actor_name': room.current_actor.first_name if room.current_actor else "None",
+        'actor_id': room.current_actor.id if room.current_actor else None,
+        'word': word_to_show,
+        'current_user_id': request.user.id
+    })

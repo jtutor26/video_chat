@@ -8,9 +8,11 @@
     #video-streams {
         display: flex;
         flex-wrap: wrap;
-        height: 100vh;
+        height: auto;
+        min-height: 50vh;
         width: 100%;
         gap: 10px;
+        justify-content: center; 
     }
 
     .video-container {
@@ -43,8 +45,26 @@
 <main>
     <h2>Room: {{ room.name }}</h2>
     
+    <!--VIDEO GRID-->
     <div id="video-streams"></div>
+    
+    <!--GAME UI-->
+    <div id="game-ui" style="text-align: center; margin: 20px; padding: 20px; background: #fff; border-radius: 8px;">
+        
+        <h2 id="game-status">Waiting for host...</h2>
+        <h1 id="secret-word" style="color: #3e8e41; display: none;">Your Word: <span id="word-text"></span></h1>
+        
+        {% if user == room.host %}
+            <button id="start-btn" onclick="startGame()">Start Charades</button>
+        {% endif %}
 
+        <div id="guess-container" style="display:none; margin-top: 10px;">
+            <input type="text" id="guess-input" placeholder="Type your guess...">
+            <button onclick="sendGuess()">Guess</button>
+        </div>
+    </div>
+
+    <!--VIDEO CONTROLS-->
     <div id="controls-wrapper">
         <button id="mic-btn">Mic On</button>
         <button id="camera-btn">Camera On</button>
@@ -52,11 +72,76 @@
     </div>
 </main>
 
+
+
 <script>
+    // VIDEO CHAT STUFF
     sessionStorage.setItem('UID', '{{ user.id }}')
     sessionStorage.setItem('room_name', '{{ room.name }}')
     // handle tokens later
-    sessionStorage.setItem('token', '') 
+    sessionStorage.setItem('token', '')
+
+    // CHARADES FUNCTIONS
+    const roomId = "{{ room.room_id }}";
+    const myId = {{ user.id }}; 
+
+    function startGame() {
+        fetch(`/room/${roomId}/start/`);
+    }
+
+    function sendGuess() {
+        const input = document.getElementById('guess-input');
+        fetch(`/room/${roomId}/guess/`, {
+            //we send data to the server
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            //sending the data as a json string package
+            body: JSON.stringify({guess: input.value})
+            // wait on django's package
+        }).then(res => res.json()).then(data => {
+            //we check what django sent
+            if(data.correct) {
+                alert("Correct! You are acting next!");
+                input.value = "";
+            } else {
+                alert("Wrong guess, try again!");
+            }
+        });
+    }
+
+    // Check game state every 1 second
+    setInterval(() => {
+        fetch(`/room/${roomId}/state/`)
+        .then(res => res.json())
+        .then(data => {
+            const statusText = document.getElementById('game-status');
+            const wordDisplay = document.getElementById('secret-word');
+            const guessBox = document.getElementById('guess-container');
+            const startBtn = document.getElementById('start-btn');
+
+            if (data.is_active) {
+                if (startBtn) startBtn.style.display = 'none'; // Hide start button if game running
+                
+                if (data.current_user_id === data.actor_id) {
+                    // I AM THE ACTOR
+                    // show the word and hide the guess box
+                    statusText.innerText = "You are acting!";
+                    document.getElementById('word-text').innerText = data.word;
+                    wordDisplay.style.display = 'block';
+                    guessBox.style.display = 'none'; // Actors can't guess
+                } else {
+                    // I AM A GUESSER
+                    // show the guess box and hide the word
+                    statusText.innerText = `${data.actor_name} is acting...`;
+                    wordDisplay.style.display = 'none';
+                    guessBox.style.display = 'block';
+                }
+            }
+        });
+    }, 1000);
 </script>
 
 <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>

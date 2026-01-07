@@ -60,7 +60,7 @@ let handleUserJoined = async (user, mediaType) => {
         }
 
         player = `<div class="video-container" id="user-container-${user.uid}">
-                        <div class="username-wrapper"><span class="user-name">User ${user.uid}</span></div>
+                        <div class="username-wrapper"><span class="user-name">${user.uid}</span></div>
                         <div class="video-player" id="user-${user.uid}"></div>
                  </div>`
         
