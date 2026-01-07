@@ -90,6 +90,13 @@ let leaveAndRemoveLocalStream = async () => {
         localTracks[i].stop()
         localTracks[i].close()
     }
+
+    let roomUUID = sessionStorage.getItem('room_uuid')
+    if(roomUUID){
+        // 'await' to make sure the server gets the message before we redirect
+        await fetch(`/room/${roomUUID}/delete/`) 
+    }
+
     //.leave() triggers 'user-left' for everyone else in the room
     await client.leave()
     //redirects back to the home page

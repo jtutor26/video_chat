@@ -89,7 +89,7 @@ def make_guess(request, room_id):
 def get_game_state(request, room_id):
     room = Room.objects.get(room_id=room_id)
     
-    # Only show the word if the requester IS the actor
+    # Only show the word if the requester is the actor
     word_to_show = room.current_word if request.user == room.current_actor else "???"
     
     return JsonResponse({
@@ -99,3 +99,16 @@ def get_game_state(request, room_id):
         'word': word_to_show,
         'current_user_id': request.user.id
     })
+
+@login_required
+def delete_room(request, room_id):
+    try:
+        room = Room.objects.get(room_id=room_id)
+        # Only delete if the user is the host
+        if request.user == room.host:
+            room.delete()
+            return JsonResponse({'status': 'deleted'})
+    except Room.DoesNotExist:
+        pass # Room might already be gone, which is fine
+        
+    return JsonResponse({'status': 'ok'})
