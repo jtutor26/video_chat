@@ -164,6 +164,43 @@ li:only-child {
     color: white;
 }
 
+/* --- Game Mode Styles --- */
+.video-container.black-and-white .video-player video {
+    filter: grayscale(100%);
+}
+
+.video-container.reverse .video-player video {
+    transform: scaleX(-1);
+}
+
+.video-container.blinking-screen .video-player video {
+    animation: blink 1s infinite;
+}
+
+.video-container.on-and-off-cam .video-player video {
+    animation: on-off 4s infinite;
+}
+
+.video-container.short-time .video-player video {
+    animation: short-time 10s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes on-off {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+@keyframes short-time {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+
 /* --- Center the "Back to Lobby" Link --- */
 /* This selects the lobby link but excludes the one inside the navigation bar */
 a[href*="lobby"]:not(nav a) {
