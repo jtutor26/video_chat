@@ -48,12 +48,20 @@ let joinAndDisplayLocalStream = async () => {
                 const { mode } = message;
                 const videoContainers = document.querySelectorAll('.video-container');
                 const modes = Array.from(gameModes);
+                const hostId = sessionStorage.getItem('host_id');
         
                 videoContainers.forEach(container => {
+                    // Remove all previous game mode classes
                     modes.forEach(m => container.classList.remove(m));
                     container.classList.remove('normal');
-                    if (mode !== 'normal') {
-                        container.classList.add(mode);
+                    
+                    const containerId = container.id.split('-')[2];
+
+                    // Apply effect only if the container does not belong to the host
+                    if (containerId !== hostId) {
+                        if (mode !== 'normal') {
+                            container.classList.add(mode);
+                        }
                     }
                 });
         
