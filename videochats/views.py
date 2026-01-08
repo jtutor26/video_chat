@@ -35,7 +35,7 @@ def room_view(request, room_id):
     
     # Check if the room has a passcode
     # We skip this check if the current user is the host of the room
-    if room.passcode is not None and request.user != room.host:
+    if room.passcode is not None and request.user != room.host and not request.user.is_admin:
         entered_passcode = request.GET.get('passcode')
         
         # Verify the passcode (convert room.passcode to string for comparison)
@@ -110,7 +110,7 @@ def delete_room(request, room_id):
     try:
         room = Room.objects.get(room_id=room_id)
         # Only delete if the user is the host
-        if request.user == room.host:
+        if request.user == room.host or request.user.is_admin:
             room.delete()
             return JsonResponse({'status': 'deleted'})
     except Room.DoesNotExist:
