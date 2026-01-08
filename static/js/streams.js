@@ -6,6 +6,17 @@ let UID = Number(sessionStorage.getItem('UID'))
 //rtc- Real Time Communication
 //codec- compression format used for the video, VP8 is standard
 const client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'})
+let channel;
+let rtm;
+
+const sendMessage = async (message) => {
+    if (channel) {
+        await channel.sendMessage({ text: JSON.stringify(message) });
+    }
+    console.log(message)
+}
+
+
 let localTracks = []
 let remoteUsers = {}
 // !!!!!THIS FUNCTION CONNECTS THE LOCAL USER TO THE SERVERS AND DISPLAYS THEIR OWN FEED!!!!!
@@ -14,9 +25,64 @@ let joinAndDisplayLocalStream = async () => {
     //The functions can be found below
     client.on('user-published', handleUserJoined)
     client.on('user-left', handleUserLeft)
-    // this grabs the camera and mic inputs and puts them in an array
-    //[0] is audio
-    //[1] is video
+
+    try {
+        UID = await client.join(APP_ID, CHANNEL, TOKEN, UID)
+    } catch (error) {
+        console.error("Error joining Agora channel:", error)
+        window.location.href = '/'
+        return 
+    }
+
+    // Login to RTM
+    try {
+        rtm = AgoraRTM.createInstance(APP_ID);
+        await rtm.login({ uid: String(UID), token: TOKEN });
+        channel = await rtm.createChannel(CHANNEL);
+        await channel.join();
+        rtm.on('ChannelMessage', ({ text }, senderId) => {
+            console.log("Message received from sender:", senderId);
+            const message = JSON.parse(text);
+
+            if (message.type === 'game_mode_change') {
+                console.log("Game mode change message received:", message);
+                const { mode } = message;
+                const videoContainers = document.querySelectorAll('.video-container');
+                const modes = Array.from(gameModes);
+                const hostId = sessionStorage.getItem('host_id');
+        
+                videoContainers.forEach(container => {
+                    console.log("Processing container:", container.id);
+                    // Remove all previous game mode classes
+                    modes.forEach(m => container.classList.remove(m));
+                    container.classList.remove('normal');
+                    
+                    const containerId = container.id.split('-')[2];
+
+                    // Apply effect only if the container does not belong to the host
+                    if (containerId !== hostId) {
+                        if (mode !== 'normal') {
+                            console.log(`Applying mode '${mode}' to container ${container.id}`);
+                            container.classList.add(mode);
+                        }
+                    } else {
+                        console.log(`Skipping host container ${container.id}`);
+                    }
+                });
+        
+                const gameModeName = mode.replace(/-/g, ' ');
+                // Find the h2 element and update its text
+                const roomNameElement = document.querySelector('h2');
+                if (roomNameElement) {
+                    const originalText = roomNameElement.textContent.split('(')[0].trim();
+                    roomNameElement.textContent = `${originalText} (${gameModeName})`;
+                }
+            }
+        });
+    } catch (error) {
+        console.error("RTM login failed:", error);
+    }
+
     localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
     let player = `<div class="video-container" id="user-container-${UID}">
                      <div class="username-wrapper"><span class="user-name">My Stream</span></div>
@@ -111,3 +177,24 @@ joinAndDisplayLocalStream()
 document.getElementById('leave-btn').addEventListener('click', leaveAndRemoveLocalStream)
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
+
+const gameModes = new Set(["blinking-screen", "black-and-white", "short-time", "on-and-off-cam", "reverse"]);
+
+const activateGameMode = () => {
+    const modes = Array.from(gameModes);
+    const randomMode = Math.random() < 0.5 ? 'normal' : modes[Math.floor(Math.random() * modes.length)];
+    
+    const message = { type: 'game_mode_change', mode: randomMode };
+    console.log("Host sending game mode change message:", message);
+    // Send message to all clients
+    sendMessage(message);
+};
+
+const hostId = sessionStorage.getItem('host_id');
+if (String(UID) === hostId) {
+  const gameModeButton = document.getElementById("game-mode-btn");
+  if (gameModeButton) {
+    gameModeButton.addEventListener("click", activateGameMode);
+  }
+}
+

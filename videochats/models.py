@@ -3,6 +3,7 @@ from django.conf import settings # used to get the custom user model
 import uuid # used to create room ID
 import random # used to pick a random word
 
+
 class Room(models.Model):
     # room host links to a User, host may have special perms..?
     # settings.AUTH_USER_MODEL ---> links to our custom user instead of the default
@@ -29,6 +30,8 @@ class Room(models.Model):
     # helper function that pics a new word
     def pick_new_word(self):
         # !!!!! WE NEED TO ADD WORDS HERE, AN API WOULD BE COOL !!!!!
-        words = ['Apple', 'Elephant', 'Guitar', 'Spiderman', 'Swimming', 'Pizza']
+        words = ['Apple', 'Elephant', 'Guitar', 'Spiderman', 'Swimming', 'Pizza', "Piano", "Running", "Sleeping", "Climbing", "Penguin", "Baseball", "Football", "Soccer", "Driving"
+                 , "Police", "Crying", "Flying", "Gravity", "Storm", "Crawl", "Zombie", "water", "Sigma", "Skibidi", "Shrek", "Bird", "Chicken", "Snake", "Doctor", "Scissors", "Jaws", "Home Alone",
+                 "Lion King", "Basketball", "Juggling", "Hula-hopping", "Cooking", "Book", "Golf"]
         self.current_word = random.choice(words)
         self.save()
