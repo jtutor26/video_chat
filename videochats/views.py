@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 import json
 from users.models import CustomUser
+import random
 
 @login_required
 def lobby_view(request):
@@ -26,6 +27,7 @@ def create_room_view(request):
         form = RoomForm()
     
     return render(request, 'videochats/create_room.html', {'form': form})
+
 @login_required
 def room_view(request, room_id):
     try:
@@ -76,13 +78,22 @@ def make_guess(request, room_id):
         guess = data.get('guess', '').strip().lower()
         room = Room.objects.get(room_id=room_id)
         # Check if guess is correct
-        if guess == room.current_word.lower(): # type: ignore
-            if room.game_mode == 'normal':
-                # Winner becomes the new actor
-                room.current_actor = request.user 
+        if guess == room.current_word.lower(): 
+            last_actor = room.current_actor
+            
+            # 1. Clear the game mode in the DB so it doesn't re-apply to the new actor
+            room.current_mode = "" 
+
+            room.current_actor = request.user 
             room.pick_new_word()
             room.save()
-            return JsonResponse({'correct': True, 'winner': request.user.first_name})
+            
+            # 2. Send last_actor.id (the number) instead of the whole object
+            return JsonResponse({
+                'correct': True, 
+                'winner': request.user.first_name, 
+                'last_actor': last_actor.id if last_actor else None
+            })
             
     return JsonResponse({'correct': False})
 
@@ -91,9 +102,7 @@ def get_game_state(request, room_id):
     room = Room.objects.get(room_id=room_id)
     
     word_to_show = "???"
-    if room.game_mode == 'host_only' and request.user == room.host:
-        word_to_show = room.current_word
-    elif request.user == room.current_actor:
+    if request.user == room.current_actor:
         word_to_show = room.current_word
     
     return JsonResponse({
@@ -102,7 +111,7 @@ def get_game_state(request, room_id):
         'actor_id': room.current_actor.id if room.current_actor else None,
         'word': word_to_show,
         'current_user_id': request.user.id,
-        'game_mode': room.game_mode,
+        'game_mode': room.current_mode,
     })
 
 @login_required
@@ -117,13 +126,11 @@ def delete_room(request, room_id):
         pass # Room might already be gone, which is fine
     return JsonResponse({'status': 'ok'})
 
-@login_required
-def change_game_mode(request, room_id):
+def update_gamemode(request, room_id):
+    GAMEMODES = ["blinking-screen", "black-and-white", "short-time", "on-and-off-cam", "reverse", ""]
+    new_gamemode = GAMEMODES[random.randint(0,5)]
     room = Room.objects.get(room_id=room_id)
-    if request.user == room.host:
-        if room.game_mode == 'normal':
-            room.game_mode = 'host_only'
-        else:
-            room.game_mode = 'normal'
-        room.save()
-    return JsonResponse({'status': 'ok', 'game_mode': room.get_game_mode_display()})
+    room.current_mode = new_gamemode
+    room.save()
+    return JsonResponse({'current_mode': new_gamemode})
+    

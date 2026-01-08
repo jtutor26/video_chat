@@ -76,8 +76,8 @@
     </div>
 </main>
 
-
-
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>
+<script src="{% static 'js/streams.js' %}"></script>
 <script>
     // VIDEO CHAT STUFF
     sessionStorage.setItem('UID', '{{ user.id }}')
@@ -89,7 +89,6 @@
     // CHARADES FUNCTIONS
     const roomId = "{{ room.room_id }}";
     const myId = {{ user.id }}; 
-
     function startGame() {
         fetch(`/room/${roomId}/start/`)
         .then(() => fetch(`/room/${roomId}/state/`)) // Fetch updated state after starting
@@ -114,6 +113,8 @@
         }).then(res => res.json()).then(data => {
             //we check what django sent
             if(data.correct) {
+                const current_actor = document.getElementById(`user-container-${data.last_actor}`);
+                current_actor.classList.remove(...gameModes);
                 alert("Correct! You are acting next!");
                 input.value = "";
             } else {
@@ -122,6 +123,25 @@
         });
     }
 
+
+    const activateGameMode = () => {
+        fetch(`/room/${roomId}/update_gamemode/`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.current_mode)
+        })
+    };
+
+    const hostId = sessionStorage.getItem('host_id');
+    if (String(UID) === hostId) {
+        const gameModeButton = document.getElementById('game-mode-btn');
+        if (gameModeButton) {
+            gameModeButton.addEventListener('click', activateGameMode);
+        }
+    };
+
+
+    const gameModes = ["blinking-screen", "black-and-white", "short-time", "on-and-off-cam", "reverse"];
     // Check game state every 1 second
     setInterval(() => {
         fetch(`/room/${roomId}/state/`)
@@ -131,16 +151,25 @@
             const wordDisplay = document.getElementById('secret-word');
             const guessBox = document.getElementById('guess-container');
             const startBtn = document.getElementById('start-btn');
+            
+            // 1. Select ALL video containers and remove game modes from everyone
+            const allVideoContainers = document.querySelectorAll('.video-container');
+            allVideoContainers.forEach(container => {
+                container.classList.remove(...gameModes);
+            });
+
+            // 2. Apply the mode ONLY to the current actor (if one exists)
+            if (data.actor_id) {
+                const current_actor = document.getElementById(`user-container-${data.actor_id}`);
+                if (current_actor && data.game_mode && data.game_mode !== '') {
+                    current_actor.classList.add(data.game_mode);
+                }
+            }
             if (data.is_active) {
                 if (startBtn) startBtn.style.display = 'none'; // Hide start button if game running
                 
-                if (data.game_mode === 'host_only' && myId === {{ room.host.id }}) {
-                    statusText.innerText = "You are the host!";
-                    document.getElementById('word-text').innerText = data.word;
-                    wordDisplay.style.display = 'block';
-                    guessBox.style.display = 'none';
-                }
-                else if (data.current_user_id === data.actor_id) {
+                
+                if (data.current_user_id === data.actor_id) {
                     // I AM THE ACTOR
                     // show the word and hide the guess box
                     statusText.innerText = "You are acting!";
@@ -155,31 +184,8 @@
                     guessBox.style.display = 'block';
                 }
             }
-        });
+        })  
     }, 1000);
-
-    {% if user == room.host %}
-    document.getElementById('game-mode-btn').addEventListener('click', () => {
-        fetch(`/room/${roomId}/change_game_mode/`)
-        .then(res => res.json())
-        .then(data => {
-            alert(`Game mode changed to ${data.game_mode}`);
-            document.querySelector('h2').innerText = `Room: {{ room.name }} (${data.game_mode})`;
-        });
-    });
-
-    document.getElementById('delete-room-btn').addEventListener('click', () => {
-        fetch(`/room/${roomId}/delete/`)
-        .then(() => {
-            window.location.href = "{% url 'lobby' %}";
-        });
-    });
-    {% endif %}
 </script>
-
-<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>
-<script src="https://download.agora.io/sdk/release/AgoraRTM_N-1.4.4.js"></script>
-
-<script src="{% static 'js/streams.js' %}"></script>
 
 {% endblock content %}
