@@ -10,5 +10,5 @@ urlpatterns = [
     path('room/<uuid:room_id>/state/', views.get_game_state, name='get_game_state'),
     path('get_name/', views.get_first_name, name='get_first_name'),
     path('room/<uuid:room_id>/delete/', views.delete_room, name='delete_room'),
-    path('room/<uuid:room_id>/change_game_mode/', views.change_game_mode, name='change_game_mode'),
+    path('room/<uuid:room_id>/update_gamemode/', views.update_gamemode, name='update_gamemode'),
 ]
