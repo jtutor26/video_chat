@@ -15,13 +15,6 @@ class Room(models.Model):
     # creates a super random ID for the url so nobody 
     # can just guess a URL and get into a room
     room_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
-    GAME_MODES = (
-        ('normal', 'Normal'),
-        ('host_only', 'Host Only'),
-    )
-    game_mode = models.CharField(max_length=10, choices=GAME_MODES, default='normal')
-
     passcode = models.PositiveIntegerField(default=None, null=True)
     max_members = models.IntegerField(default=10)
 
@@ -30,6 +23,7 @@ class Room(models.Model):
     is_game_active = models.BooleanField(default=False)
     current_actor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='acting_in', on_delete=models.SET_NULL)
     current_word = models.CharField(max_length=100, blank=True, null=True)
+    current_mode = models.CharField(max_length=50, blank=True, null=True)
     def __str__(self):
         return self.name
     
