@@ -43,7 +43,7 @@
 </style>
 
 <main>
-    <h2>Room: {{ room.name }}</h2>
+    <h2>Room: {{ room.name }} ({{ room.get_game_mode_display }})</h2>
     
     <!--VIDEO GRID-->
     <div id="video-streams"></div>
@@ -68,7 +68,10 @@
     <div id="controls-wrapper">
         <button id="mic-btn">Mic On</button>
         <button id="camera-btn">Camera On</button>
-        <button id="game-mode-btn">Game Mode</button>
+        {% if user == room.host %}
+        <button id="game-mode-btn">Change Game Mode</button>
+        <button id="delete-room-btn" style="background-color: #ff5555; color: white;">Delete Room</button>
+        {% endif %}
         <button id="leave-btn" style="background-color: #ff5555; color: white;">Leave Room</button>
     </div>
 </main>
@@ -79,7 +82,7 @@
     // VIDEO CHAT STUFF
     sessionStorage.setItem('UID', '{{ user.id }}')
     sessionStorage.setItem('room_name', '{{ room.name }}')
-    // handle tokens later
+    sessionStorage.setItem('room_uuid', '{{ room.room_id }}')
     sessionStorage.setItem('token', '')
 
     // CHARADES FUNCTIONS
@@ -143,6 +146,24 @@
             }
         });
     }, 1000);
+
+    {% if user == room.host %}
+    document.getElementById('game-mode-btn').addEventListener('click', () => {
+        fetch(`/room/${roomId}/change_game_mode/`)
+        .then(res => res.json())
+        .then(data => {
+            alert(`Game mode changed to ${data.game_mode}`);
+            document.querySelector('h2').innerText = `Room: {{ room.name }} (${data.game_mode})`;
+        });
+    });
+
+    document.getElementById('delete-room-btn').addEventListener('click', () => {
+        fetch(`/room/${roomId}/delete/`)
+        .then(() => {
+            window.location.href = "{% url 'lobby' %}";
+        });
+    });
+    {% endif %}
 </script>
 
 <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.11.0.js"></script>

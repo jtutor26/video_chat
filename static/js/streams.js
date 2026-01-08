@@ -59,8 +59,12 @@ let handleUserJoined = async (user, mediaType) => {
             player.remove()
         }
 
+        let response = await fetch(`/get_name/?uid=${user.uid}`)
+        let data = await response.json()
+        let firstName = data.name
+
         player = `<div class="video-container" id="user-container-${user.uid}">
-                        <div class="username-wrapper"><span class="user-name">${user.uid}</span></div>
+                        <div class="username-wrapper"><span class="user-name">${firstName}</span></div>
                         <div class="video-player" id="user-${user.uid}"></div>
                  </div>`
         
@@ -86,6 +90,13 @@ let leaveAndRemoveLocalStream = async () => {
         localTracks[i].stop()
         localTracks[i].close()
     }
+
+    let roomUUID = sessionStorage.getItem('room_uuid')
+    if(roomUUID){
+        // 'await' to make sure the server gets the message before we redirect
+        await fetch(`/room/${roomUUID}/delete/`) 
+    }
+
     //.leave() triggers 'user-left' for everyone else in the room
     await client.leave()
     //redirects back to the home page

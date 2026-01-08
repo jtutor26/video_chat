@@ -5,8 +5,8 @@ from .forms import RoomForm
 from django.contrib import messages
 from django.http import JsonResponse
 import json
+from users.models import CustomUser
 
-# Create your views here.
 @login_required
 def lobby_view(request):
     return render(request, 'videochats/lobby.html', {'rooms':Room.objects.all()})
@@ -45,6 +45,19 @@ def room_view(request, room_id):
 
     return render(request, 'videochats/room.html', {'room': room,})
 
+# Used to get the name for the video boxes in the rooms
+@login_required
+def get_first_name(request):
+    uid = request.GET.get('uid')
+    try:
+        user = CustomUser.objects.get(id=uid)
+        # Explicitly return the first_name
+        return JsonResponse({'name': user.first_name})
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'name': "Unknown"})
+
+
+# CHARADES RELATED FUNCTIONS
 @login_required
 def start_game(request, room_id):
     room = Room.objects.get(room_id=room_id)
@@ -64,8 +77,9 @@ def make_guess(request, room_id):
         room = Room.objects.get(room_id=room_id)
         # Check if guess is correct
         if guess == room.current_word.lower(): # type: ignore
-            # Winner becomes the new actor
-            room.current_actor = request.user 
+            if room.game_mode == 'normal':
+                # Winner becomes the new actor
+                room.current_actor = request.user 
             room.pick_new_word()
             room.save()
             return JsonResponse({'correct': True, 'winner': request.user.first_name})
@@ -76,8 +90,11 @@ def make_guess(request, room_id):
 def get_game_state(request, room_id):
     room = Room.objects.get(room_id=room_id)
     
-    # Only show the word if the requester IS the actor
-    word_to_show = room.current_word if request.user == room.current_actor else "???"
+    word_to_show = "???"
+    if room.game_mode == 'host_only' and request.user == room.host:
+        word_to_show = room.current_word
+    elif request.user == room.current_actor:
+        word_to_show = room.current_word
     
     return JsonResponse({
         'is_active': room.is_game_active,
@@ -86,3 +103,26 @@ def get_game_state(request, room_id):
         'word': word_to_show,
         'current_user_id': request.user.id
     })
+
+@login_required
+def delete_room(request, room_id):
+    try:
+        room = Room.objects.get(room_id=room_id)
+        # Only delete if the user is the host
+        if request.user == room.host:
+            room.delete()
+            return JsonResponse({'status': 'deleted'})
+    except Room.DoesNotExist:
+        pass # Room might already be gone, which is fine
+    return JsonResponse({'status': 'ok'})
+
+@login_required
+def change_game_mode(request, room_id):
+    room = Room.objects.get(room_id=room_id)
+    if request.user == room.host:
+        if room.game_mode == 'normal':
+            room.game_mode = 'host_only'
+        else:
+            room.game_mode = 'normal'
+        room.save()
+    return JsonResponse({'status': 'ok', 'game_mode': room.get_game_mode_display()})
