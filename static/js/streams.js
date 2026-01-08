@@ -14,6 +14,7 @@ const sendMessage = async (message) => {
     if (channel) {
         await channel.sendMessage({ text: JSON.stringify(message) });
     }
+    console.log(message)
 }
 
 
@@ -42,15 +43,19 @@ let joinAndDisplayLocalStream = async () => {
         await rtm.login({ uid: String(UID), token: TOKEN });
         channel = await rtm.createChannel(CHANNEL);
         await channel.join();
-        rtm.on('ChannelMessage', ({ text }) => {
+        rtm.on('ChannelMessage', ({ text }, senderId) => {
+            console.log("Message received from sender:", senderId);
             const message = JSON.parse(text);
+
             if (message.type === 'game_mode_change') {
+                console.log("Game mode change message received:", message);
                 const { mode } = message;
                 const videoContainers = document.querySelectorAll('.video-container');
                 const modes = Array.from(gameModes);
                 const hostId = sessionStorage.getItem('host_id');
         
                 videoContainers.forEach(container => {
+                    console.log("Processing container:", container.id);
                     // Remove all previous game mode classes
                     modes.forEach(m => container.classList.remove(m));
                     container.classList.remove('normal');
@@ -60,8 +65,11 @@ let joinAndDisplayLocalStream = async () => {
                     // Apply effect only if the container does not belong to the host
                     if (containerId !== hostId) {
                         if (mode !== 'normal') {
+                            console.log(`Applying mode '${mode}' to container ${container.id}`);
                             container.classList.add(mode);
                         }
+                    } else {
+                        console.log(`Skipping host container ${container.id}`);
                     }
                 });
         
@@ -174,14 +182,17 @@ const activateGameMode = () => {
     const modes = Array.from(gameModes);
     const randomMode = Math.random() < 0.5 ? 'normal' : modes[Math.floor(Math.random() * modes.length)];
     
+    const message = { type: 'game_mode_change', mode: randomMode };
+    console.log("Host sending game mode change message:", message);
     // Send message to all clients
-    sendMessage({ type: 'game_mode_change', mode: randomMode });
+    sendMessage(message);
 };
 
 const hostId = sessionStorage.getItem('host_id');
 if (String(UID) === hostId) {
-    const gameModeButton = document.getElementById('game-mode-btn');
-    if (gameModeButton) {
-        gameModeButton.addEventListener('click', activateGameMode);
-    }
-};
+  const gameModeButton = document.getElementById("game-mode-btn");
+  if (gameModeButton) {
+    gameModeButton.addEventListener("click", activateGameMode);
+  }
+}
+
