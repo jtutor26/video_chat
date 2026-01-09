@@ -1,44 +1,51 @@
 {% extends 'base.html'%}
 {% block title %}Home{% endblock title %}
-{%block content%} 
-    <h1 class="title">Video Chat</h1>
-<p class="description">Connect instantly with friends anywhere. Create a private room, invite others with a link or code, and jump into real-time video for party games like charades, trivia, and more. </p>
 
-<div class ="about-section">
-    <h2 class="about-us">How It Works</h2>
-    <p>
-        <strong>1) Create a Room:</strong> Start a new room and get a shareable invite.<br>
-        <strong>2) Invite Friends:</strong> Send the room link or code to your group. <br>
-        <strong>3) Join & Play:</strong> Turn on your camera/mic and start your game session in seconds!
-    </p>
-</div>
-
-
-<div class="about-section" style="margin-top: 2.5rem;">
-    <h2 class="about-us">Features</h2> 
-        <p>
-       • Private rooms for group calls.<br>
-       • Real time audio and video communication.<br>
-       • Lightweight interface that works great on desktop, and on mobile devices.<br>
-       • Profile page to manage your account details.<br>
-       • Built with a focus on speed and smooth user experience.
-    </p>
-</div>
-
-
-<div class="about-section " style="margin-top: 2.5rem;">
-    <h2 class="about-us">Privacy & Safety</h2>
-    <p>
-        Your camera and microphone are only accessed with your permission. For the best experienece, use a trusted network and only share room invites with people you know. 
-    </p>
-    <p>
-        This application was develooped for a unit project at <strong>Base Camp Coding Academy</strong>
-        It demonstrates full-stack skills including authentication, user profiles, and real-time communication.
-    </p>
-    <p style="margin-top: 0.75rem;">
-        <strong>Team Members:</strong> <em>Jonathan Tutor, Bryson Flowers, Lemuel Tzib</em><br>
-        <strong>Tech Stack:</strong>Django, HTML/CSS, Javascript, and real-time video technology (WebRTS / Sockets).
+{% block content %} 
+<main class="home-container">
+    <header class="hero">
+        <h1 class="hero-title">NyxCam</h1>
+        <p class="hero-description">
+            Connect instantly with friends anywhere. Create a private room, invite others with a link or code, and jump into real-time video for party games like charades, trivia, and more.
         </p>
-    </div>
+    </header>
 
-{%endblock content%}
+    <section class="info-section">
+        <h2 class="info-title">How It Works</h2>
+        <p>
+            <strong>1) Create a Room:</strong> Start a new room and get a shareable invite.<br>
+            <strong>2) Invite Friends:</strong> Send the room link or code to your group.<br>
+            <strong>3) Join & Play:</strong> Turn on your camera/mic and start your game session in seconds!
+        </p>
+    </section>
+
+    <section class="info-section">
+        <h2 class="info-title">Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">Private rooms for group calls.</div>
+            <div class="feature-item">Real-time audio and video communication.</div>
+            <div class="feature-item">Lightweight interface that works great on desktop and mobile.</div>
+            <div class="feature-item">Profile page to manage your account details.</div>
+            <div class="feature-item">Built with a focus on speed and smooth user experience.</div>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <h2 class="info-title">Privacy & Safety</h2>
+        <p>
+            Your camera and microphone are only accessed with your permission. For the best experience, use a trusted network and only share room invites with people you know.
+        </p>
+        <p>
+            This application was developed for a unit project at <strong>Base Camp Coding Academy</strong>.
+            It demonstrates full-stack skills including authentication, user profiles, and real-time communication.
+        </p>
+    </section>
+</main>
+
+<footer class="page-footer">
+    <p>
+        <strong>Team Members:</strong> <em>Jonathan Tutor, Bryson Flowers, Lemuel Tzib</em><br>
+        <strong>Tech Stack:</strong> Django, HTML/CSS, Javascript, and real-time video technology (WebRTC / Sockets).
+    </p>
+</footer>
+{% endblock content %}
