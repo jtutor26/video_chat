@@ -116,15 +116,18 @@ def get_game_state(request, room_id):
 
 @login_required
 def delete_room(request, room_id):
-    try:
-        room = Room.objects.get(room_id=room_id)
-        # Only delete if the user is the host
-        if request.user == room.host or request.user.is_admin:
-            room.delete()
-            return JsonResponse({'status': 'deleted'})
-    except Room.DoesNotExist:
-        pass # Room might already be gone, which is fine
-    return JsonResponse({'status': 'ok'})
+    if request.method == 'POST':
+        try:
+            room = Room.objects.get(room_id=room_id)
+            # Only delete if the user is the host or an admin
+            if request.user == room.host or request.user.is_admin:
+                room.delete()
+                messages.success(request, 'Room deleted successfully.')
+            else:
+                messages.error(request, 'You do not have permission to delete this room.')
+        except Room.DoesNotExist:
+            messages.error(request, 'Room does not exist.')
+    return redirect('lobby')
 
 def update_gamemode(request, room_id):
     GAMEMODES = ["blinking-screen", "black-and-white", "short-time", "on-and-off-cam", "reverse", ""]
