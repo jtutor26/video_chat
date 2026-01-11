@@ -84,6 +84,7 @@
     sessionStorage.setItem('room_uuid', '{{ room.room_id }}')
     sessionStorage.setItem('token', '')
     sessionStorage.setItem('host_id', '{{ room.host.id }}')
+    sessionStorage.setItem('csrf_token', '{{ csrf_token }}')
 
     // CHARADES FUNCTIONS
     const roomId = "{{ room.room_id }}";

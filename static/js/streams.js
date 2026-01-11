@@ -80,8 +80,25 @@ let leaveAndRemoveLocalStream = async () => {
     }
     //.leave() triggers 'user-left' for everyone else in the room
     await client.leave()
-    //redirects back to the home page
-    window.location.href = '/'
+    // 1. Get the IDs and Token we stored
+    let ROOM_UUID = sessionStorage.getItem('room_uuid')
+    let HOST_ID = sessionStorage.getItem('host_id')
+    let CSRF_TOKEN = sessionStorage.getItem('csrf_token')
+
+    // 2. Check if the current user (UID) is the Host
+    if (String(UID) === HOST_ID) {
+        // 3. Await the fetch so it finishes before we redirect
+        await fetch(`/room/${ROOM_UUID}/delete/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN // Required for Django POSTs
+            }
+        })
+    }
+
+    // Redirect to lobby
+    window.location.href = '/lobby/'
 }
 //!!!!!BOTH TOGGLE FUNCTIONS WORK VERY SIMILAR AND SELF-EXPLAINITORY!!!!!
 let toggleCamera = async (e) => {
