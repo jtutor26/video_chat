@@ -94,7 +94,7 @@
         .then(() => fetch(`/room/${roomId}/state/`)) // Fetch updated state after starting
         .then(res => res.json())
         .then(data => {
-            document.querySelector('h2').innerText = `Room: {{ room.name }} (${data.game_mode})`;
+            document.querySelector('h2').innerText = `Room: {{ room.name }}`;
         });
     }
 
