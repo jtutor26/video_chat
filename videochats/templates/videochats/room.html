@@ -43,7 +43,7 @@
 </style>
 
 <main>
-    <h2>Room: {{ room.name }} ({{ room.get_game_mode_display }})</h2>
+    <h2>Room: {{ room.name }}</h2>
     
     <!--VIDEO GRID-->
     <div id="video-streams"></div>
@@ -84,6 +84,7 @@
     sessionStorage.setItem('room_uuid', '{{ room.room_id }}')
     sessionStorage.setItem('token', '')
     sessionStorage.setItem('host_id', '{{ room.host.id }}')
+    sessionStorage.setItem('csrf_token', '{{ csrf_token }}')
 
     // CHARADES FUNCTIONS
     const roomId = "{{ room.room_id }}";
@@ -93,7 +94,7 @@
         .then(() => fetch(`/room/${roomId}/state/`)) // Fetch updated state after starting
         .then(res => res.json())
         .then(data => {
-            document.querySelector('h2').innerText = `Room: {{ room.name }} (${data.game_mode})`;
+            document.querySelector('h2').innerText = `Room: {{ room.name }}`;
         });
     }
 

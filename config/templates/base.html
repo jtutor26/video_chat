@@ -8,6 +8,7 @@
 </head>
 <body>
     <nav>
+        <img class='logo' src="{%static 'img/logo.png' %}">
         <a href="{% url 'home'%}">Home</a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}">Edit Profile</a>

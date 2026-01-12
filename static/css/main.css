@@ -54,6 +54,14 @@ nav a:hover {
     color: var(--primary-color);
 }
 
+.logo {
+    height: 40px;        
+    width: auto;         
+    margin-right: auto;  
+    object-fit: contain; 
+    cursor: pointer;     
+}
+
 /* --- Main Content Block --- */
 .home-container {
     max-width: 960px;

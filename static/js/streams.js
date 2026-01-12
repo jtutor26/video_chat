@@ -49,11 +49,14 @@ let handleUserJoined = async (user, mediaType) => {
     //creates the HTML <div>, adds it to the grid, and plays the video track
     if (mediaType === 'video'){
         let player = document.getElementById(`user-container-${user.uid}`)
+        let response = await fetch(`/get_name/?uid=${user.uid}`)
+        let data = await response.json()
+        let username = data.name
         if (player != null){
             player.remove()
         }
         player = `<div class="video-container" id="user-container-${user.uid}">
-                        <div class="username-wrapper"><span class="user-name">User ${user.uid}</span></div>
+                        <div class="username-wrapper"><span class="user-name">${username}</span></div>
                         <div class="video-player" id="user-${user.uid}"></div>
                  </div>`
         document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
@@ -80,8 +83,25 @@ let leaveAndRemoveLocalStream = async () => {
     }
     //.leave() triggers 'user-left' for everyone else in the room
     await client.leave()
-    //redirects back to the home page
-    window.location.href = '/'
+    // 1. Get the IDs and Token we stored
+    let ROOM_UUID = sessionStorage.getItem('room_uuid')
+    let HOST_ID = sessionStorage.getItem('host_id')
+    let CSRF_TOKEN = sessionStorage.getItem('csrf_token')
+
+    // 2. Check if the current user (UID) is the Host
+    if (String(UID) === HOST_ID) {
+        // 3. Await the fetch so it finishes before we redirect
+        await fetch(`/room/${ROOM_UUID}/delete/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN // Required for Django POSTs
+            }
+        })
+    }
+
+    // Redirect to lobby
+    window.location.href = '/lobby/'
 }
 //!!!!!BOTH TOGGLE FUNCTIONS WORK VERY SIMILAR AND SELF-EXPLAINITORY!!!!!
 let toggleCamera = async (e) => {
