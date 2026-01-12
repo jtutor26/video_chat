@@ -49,11 +49,14 @@ let handleUserJoined = async (user, mediaType) => {
     //creates the HTML <div>, adds it to the grid, and plays the video track
     if (mediaType === 'video'){
         let player = document.getElementById(`user-container-${user.uid}`)
+        let response = await fetch(`/get_name/?uid=${user.uid}`)
+        let data = await response.json()
+        let username = data.name
         if (player != null){
             player.remove()
         }
         player = `<div class="video-container" id="user-container-${user.uid}">
-                        <div class="username-wrapper"><span class="user-name">User ${user.uid}</span></div>
+                        <div class="username-wrapper"><span class="user-name">${username}</span></div>
                         <div class="video-player" id="user-${user.uid}"></div>
                  </div>`
         document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
